@@ -47,3 +47,5 @@ class Command(BaseCommand):
                                 mute, courtesy_of=subscription.to_user.username)
             except Exception as e:
                 print(e)
+
+            user.fetch_mutings()
