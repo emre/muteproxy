@@ -1,10 +1,12 @@
-from django.db import models
+import datetime
+import json
+
 from django.contrib.auth.models import AbstractUser
 from django.core.signing import Signer
-from .utils import get_lightsteem_client, get_sc_client
+from django.db import models
 from steemconnect.operations import Mute, Unfollow
 
-import json
+from .utils import get_lightsteem_client, get_sc_client
 
 
 class User(AbstractUser):
@@ -43,7 +45,6 @@ class User(AbstractUser):
 
         return json.loads(self.mutings)
 
-
     @property
     def subscribed_users(self):
         return Subscription.objects.filter(
@@ -53,10 +54,34 @@ class User(AbstractUser):
     def get_subscriptions(self):
         return Subscription.objects.filter(from_user=self, is_active=True)
 
+    def refresh_access_token(self):
+        signer = Signer()
+        token = self.token_set.get()
+        sc_client = get_sc_client()
+        new_token_data = sc_client.refresh_access_token(signer.unsign(
+            token.refresh_token), "custom_json,offline")
+
+        if 'error' in new_token_data:
+            # probably access is revoked, let's remove the user's subscriptions.
+            Subscription.objects.filter(from_user=self).update(is_active=False)
+
+        token.expires_at = datetime.datetime.utcnow() + datetime.timedelta(
+            seconds=new_token_data.get("expires_in"))
+
+        token.access_token = signer.sign(new_token_data.get("access_token"))
+        token.refresh_token = signer.sign(new_token_data.get("refresh_token"))
+        token.save()
+
     def mute(self, account, courtesy_of=None):
         signer = Signer()
         sc_client = get_sc_client()
         token = self.token_set.get()
+
+        # get a new token in terms of expirations
+        if token.expires_at >= datetime.datetime.utcnow():
+            self.refresh_access_token()
+            token = self.token_set.get()
+
         sc_client.access_token = signer.unsign(
             token.access_token)
         mute_op = Mute(
