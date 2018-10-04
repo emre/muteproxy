@@ -105,6 +105,8 @@ class User(AbstractUser):
             message=action_text)
         log.save()
 
+        self.fetch_mutings()
+
     def unmute(self, account, courtesy_of=None):
         signer = Signer()
         sc_client = get_sc_client()
