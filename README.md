@@ -11,7 +11,7 @@ $ tmp source muting-proxy-env/bin/activate
 $ git clone https://github.com/emre/muteproxy.git
 $ cd muteproxy
 $ pip install -r requirements.txt
-$ touch base/settings.py base/local_settings.py
+$ touch base/local_settings.py
 $ python manage.py migrate
 ```
 
