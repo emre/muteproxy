@@ -12,9 +12,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         lightsteem_client = get_lightsteem_client()
         while True:
-            sys.stdout.write("Starting..\n")
+            print("Starting..\n")
             self.handle_loop(lightsteem_client)
-            sys.stdout.write("Sleeping..\n")
+            print("Sleeping..\n")
             time.sleep(0.5)
 
     def handle_loop(self, lightsteem_client):
@@ -44,7 +44,7 @@ class Command(BaseCommand):
                 #         receiver_muting_list = subscription. \
                 #             from_user.get_muting_list(fresh=True)
                 #         if unmute in receiver_muting_list:
-                #             sys.stdout.write(
+                #             print(
                 #                 f"recv: {subscription.from_user} unmute {unmute} "
                 #                 f"ta: {target_account}")
                 #             subscription.from_user.unmute(
@@ -56,7 +56,7 @@ class Command(BaseCommand):
                         receiver_muting_list = subscription. \
                             from_user.get_muting_list(fresh=True)
                         if mute not in receiver_muting_list:
-                            sys.stdout.write(
+                            print(
                                 f"recv: {subscription.from_user} mute {mute} "
                                 f"ta: {target_account}")
                             subscription.from_user.mute(

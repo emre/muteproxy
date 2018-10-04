@@ -8,14 +8,14 @@ from mutings.models import Subscription
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        sys.stdout.write(f"Started..\n")
+        print(f"Started..\n")
 
         while True:
             subscriptions = Subscription.objects.filter(
                     initial_action=False)
             for subscription in subscriptions:
 
-                sys.stdout.write(f"Checking {subscription}\n")
+                print(f"Checking {subscription}\n")
 
                 # flush the cache
                 subscription.from_user.fetch_mutings()
@@ -28,14 +28,16 @@ class Command(BaseCommand):
 
                 for mute_target in mute_targets:
                     try:
-                        subscription.from_user.mute(mute_target)
+                        subscription.from_user.mute(
+                            mute_target,
+                            courtesy_of=subscription.from_user.username)
                     except Exception as e:
-                        sys.stdout.write(str(e) + "\n")
+                        print(str(e) + "\n")
                         continue
 
                 subscription.initial_action = True
                 subscription.save()
-                sys.stdout.write("Loop is completed. Starting again.")
+                print("Loop is completed. Starting again.")
 
-            sys.stdout.write(f"Sleeping..\n")
+            print(f"Sleeping..\n")
             time.sleep(1)
