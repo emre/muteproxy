@@ -59,7 +59,8 @@
                       the list</a>
                   </div>
                   <span class="d-block">Mutes <a
-                      href="{% url 'account' subscription.to_user.username %}">N</a> accounts.</span>
+                      href="{% url 'account' subscription.to_user.username %}">            <span data-account="{{ subscription.to_user.username }}"
+                  class="mute-count" id="mute-count-{{ subscription.to_user.username }}"></span></a> accounts.
                 </div>
               </div>
             {% endfor %}
