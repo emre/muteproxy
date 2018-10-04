@@ -30,7 +30,7 @@ class Command(BaseCommand):
                     try:
                         subscription.from_user.mute(
                             mute_target,
-                            courtesy_of=subscription.from_user.username)
+                            courtesy_of=subscription.to_user.username)
                     except Exception as e:
                         print(str(e) + "\n")
                         continue
