@@ -17,30 +17,15 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
 
-    def fetch_mutings(self):
+    def fetch_mutings(self, dont_save=False):
         c = get_lightsteem_client()
         ignorings = c.account(self.username).ignorings()
+        if dont_save:
+            return ignorings
         self.mutings = json.dumps(ignorings)
         self.save()
 
-    @property
-    def muted_num(self):
-        if not self.mutings:
-            self.fetch_mutings()
-
-        return len(json.loads(self.mutings))
-
-    @property
-    def muting_list(self):
-        if not self.mutings:
-            self.fetch_mutings()
-
-        return json.loads(self.mutings)
-
-    def get_muting_list(self, fresh=True):
-        if fresh:
-            self.fetch_mutings()
-
+    def get_muting_list(self):
         if not self.mutings:
             return []
 
@@ -104,8 +89,6 @@ class User(AbstractUser):
             user=self,
             message=action_text)
         log.save()
-
-        self.fetch_mutings()
 
     def unmute(self, account, courtesy_of=None):
         signer = Signer()

@@ -49,13 +49,6 @@
     // Collapse the navbar when page is scrolled
     $(window).scroll(navbarCollapse);
 
-    // Modal popup$(function () {
-    $('.account-mutings').magnificPopup({
-        type: 'inline',
-        preloader: false,
-        focus: '#username',
-        modal: true
-    });
     $(document).on('click', '.portfolio-modal-dismiss', function (e) {
         e.preventDefault();
         $.magnificPopup.close();
@@ -106,6 +99,7 @@
         }).on("blur", ".floating-label-form-group", function () {
             $(this).removeClass("floating-label-form-group-with-focus");
         });
+
     });
 
 })(jQuery); // End of use strict

@@ -12,7 +12,9 @@
                 <div class="col-lg-12 mx-auto">
                   <h3 class="text-secondary text-uppercase mb-0">Muting list
                     of {{ account.username }}
-                    ({{ account.muted_num }})
+                    <span data-account="{{ account.username }}"
+                          class="mute-count"
+                          id="mute-count-{{ account.username }}">()</span>
                     {% if request.user.is_authenticated %}
                       {% if  account.username not in request.user.subscribed_users %}
                         <a class="btn btn-primary btn-lg rounded-pill subscribe"
@@ -29,34 +31,17 @@
 
                   </h3>
                   <hr class="star-dark mb-5">
-                  {% if account.muting_list %}
-                    <table class="table table-striped">
-                      <thead>
-                      <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Username</th>
-                        <th scope="col">Profile</th>
-                      </tr>
-                      </thead>
-                      <tbody>
-                      {% for muted_account in account.muting_list %}
-
-                        <tr>
-                          <th scope="row"><img
-                              src="https://steemitimages.com/u/{{ muted_account }}/avatar"
-                              width="40" height="40"
-                              style="border-radius: 4px;"></th>
-                          <td>{{ muted_account }}</td>
-                          <td><a href="http://steemit.com/@{{ muted_account }}">Link</a>
-                          </td>
-                        </tr>
-                      {% endfor %}
-                      </tbody>
-                    </table>
-                  {% else %}
-                    <p>Looks like {{ account.username }} didn't mute anyone,
-                      yet.</p>
-                  {% endif %}
+                  <table class="table table-striped" id="muted-list">
+                    <thead>
+                    <tr>
+                      <th scope="col">Avatar</th>
+                      <th scope="col">Username</th>
+                      <th scope="col">Profile</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                  </table>
 
                 </div>
               </div>
@@ -69,4 +54,40 @@
     </div>
 
   </div>
+{% endblock %}
+
+{% block extra_js %}
+  <script type="text/javascript">
+      (function ($) {
+          "use strict";
+
+          $(function () {
+              steem.api.setOptions({
+                  url: 'https://api.steemit.com',
+                  useAppbaseApi: true
+              });
+
+              $.each($('.mute-count'), function (key, val) {
+                  var username = $(this).attr('data-account');
+                  steem.api.getFollowing(username, 0, 'ignore', 1000, function (err, result) {
+                      $('#mute-count-' + username).html('(' + result.length + ')');
+                      $.each(result, function (index, data) {
+                          console.log(data.following);
+                          $('#muted-list').append('<tr>\n' +
+                              '<th scope="row"><img\n' +
+                              'src="https://steemitimages.com/u/'+ data.following +'/avatar"\n' +
+                              '                              width="40" height="40"\n' +
+                              '                              style="border-radius: 4px;"></th>\n' +
+                              '                          <td>'+ data.following +'</td>\n' +
+                              '                          <td><a href="http://steemit.com/@'+ data.following +'">Link</a>\n' +
+                              '                          </td>\n' +
+                              '                        </tr>');
+                      });
+                  });
+
+              });
+          });
+
+      })(jQuery);
+  </script>
 {% endblock %}

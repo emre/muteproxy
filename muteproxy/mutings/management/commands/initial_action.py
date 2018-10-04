@@ -18,13 +18,13 @@ class Command(BaseCommand):
                 print(f"Checking {subscription}\n")
 
                 # flush the cache
-                subscription.from_user.fetch_mutings()
-                subscription.to_user.fetch_mutings()
+                from_user_mutings = subscription.from_user.fetch_mutings(
+                    dont_save=True)
+                to_user_mutings = subscription.to_user.fetch_mutings(
+                    dont_save=True)
 
                 # get the difference
-                mute_targets = set(
-                    subscription.to_user.muting_list) - set(
-                    subscription.from_user.muting_list)
+                mute_targets = set(to_user_mutings) - set(from_user_mutings)
 
                 for mute_target in mute_targets:
                     try:
