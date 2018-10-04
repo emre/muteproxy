@@ -4,6 +4,7 @@ import json
 from django.contrib.auth.models import AbstractUser
 from django.core.signing import Signer
 from django.db import models
+from django.utils import timezone
 from steemconnect.operations import Mute, Unfollow
 
 from .utils import get_lightsteem_client, get_sc_client
@@ -65,7 +66,7 @@ class User(AbstractUser):
             # probably access is revoked, let's remove the user's subscriptions.
             Subscription.objects.filter(from_user=self).update(is_active=False)
 
-        token.expires_at = datetime.datetime.utcnow() + datetime.timedelta(
+        token.expires_at = timezone.now() + datetime.timedelta(
             seconds=new_token_data.get("expires_in"))
 
         token.access_token = signer.sign(new_token_data.get("access_token"))
@@ -78,7 +79,7 @@ class User(AbstractUser):
         token = self.token_set.get()
 
         # get a new token in terms of expirations
-        if token.expires_at >= datetime.datetime.utcnow():
+        if token.expires_at >= timezone.now():
             self.refresh_access_token()
             token = self.token_set.get()
 
