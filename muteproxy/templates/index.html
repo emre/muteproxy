@@ -23,7 +23,7 @@
                 <span class="d-block">Mutes <a
                     href="{% url 'account' popular_account.username %}">
             <span data-account="{{ popular_account.username }}"
-                  class="mute-count" id="mute-count-{{ popular_account.username }}"></span></a> accounts.</span>
+                  class="mute-count mute-count-{{ popular_account.username }}"></span></a> accounts.</span>
               </div>
             </div>
           {% endfor %}
@@ -60,7 +60,8 @@
                   </div>
                   <span class="d-block">Mutes <a
                       href="{% url 'account' subscription.to_user.username %}">            <span data-account="{{ subscription.to_user.username }}"
-                  class="mute-count" id="mute-count-{{ subscription.to_user.username }}"></span></a> accounts.
+                  class="mute-count mute-count-{{ subscription.to_user.username }}"
+                  ></span></a> accounts.
                 </div>
               </div>
             {% endfor %}
@@ -93,7 +94,10 @@
               $.each($('span .mute-count'), function (key, val) {
                   var username = $(this).attr('data-account');
                   steem.api.getFollowing(username, 0, 'ignore', 1000, function(err, result) {
-                    $('#mute-count-' +username).html(result.length);
+                    {#$('.mute-count-' +username).html(result.length);#}
+                      $.each($('.mute-count-' + username), function (key, val) {
+                          $(this).html(result.length);
+                      });
                   });
 
               });
