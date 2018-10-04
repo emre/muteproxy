@@ -72,7 +72,6 @@
                   steem.api.getFollowing(username, 0, 'ignore', 1000, function (err, result) {
                       $('#mute-count-' + username).html('(' + result.length + ')');
                       $.each(result, function (index, data) {
-                          console.log(data.following);
                           $('#muted-list').append('<tr>\n' +
                               '<th scope="row"><img\n' +
                               'src="https://steemitimages.com/u/'+ data.following +'/avatar"\n' +
